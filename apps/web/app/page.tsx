@@ -1,7 +1,11 @@
 import type { Link } from '@repo/api';
+import {
+  getMessage,
+} from '@repo/messages';
 import { Button } from '@repo/ui/button';
 import Image, { type ImageProps } from 'next/image';
 
+import { getUiLanguage } from './i18n';
 import styles from './page.module.css';
 
 type Props = Omit<ImageProps, 'src'> & {
@@ -20,25 +24,28 @@ const ThemeImage = (props: Props) => {
   );
 };
 
-async function getLinks(): Promise<Link[]> {
-  try {
-    const res = await fetch('http://localhost:3000/links', {
-      cache: 'no-store',
-    });
+async function getLinks(lang: string): Promise<Link[]> {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_API_BASE_URL ??
+    process.env.API_BASE_URL ??
+    'http://localhost:3000';
+  const endpoint = `${baseUrl.replace(/\/$/, '')}/links`;
+  const res = await fetch(endpoint, {
+    cache: 'no-store',
+    headers: lang ? { 'accept-language': lang } : undefined,
+  }).catch(() => null);
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch links');
-    }
-
-    return res.json();
-  } catch (error) {
-    console.error('Error fetching links:', error);
+  if (!res || !res.ok) {
     return [];
   }
+
+  const payload = (await res.json()) as { data?: Link[] };
+  return Array.isArray(payload?.data) ? payload.data : [];
 }
 
 export default async function Home() {
-  const links = await getLinks();
+  const { messages, uiLang } = await getUiLanguage();
+  const links = await getLinks(uiLang);
 
   return (
     <div className={styles.page}>
@@ -47,16 +54,17 @@ export default async function Home() {
           className={styles.logo}
           srcLight="turborepo-dark.svg"
           srcDark="turborepo-light.svg"
-          alt="Turborepo logo"
+          alt={getMessage(messages, 'ALT_TURBOREPO_LOGO', uiLang)}
           width={180}
           height={38}
           priority
         />
         <ol>
           <li>
-            Get started by editing <code>apps/web/app/page.tsx</code>
+            {getMessage(messages, 'PAGE_GET_STARTED', uiLang)}{' '}
+            <code>apps/web/app/page.tsx</code>
           </li>
-          <li>Save and see your changes instantly.</li>
+          <li>{getMessage(messages, 'PAGE_SAVE_CHANGES', uiLang)}</li>
         </ol>
 
         <div className={styles.ctas}>
@@ -69,11 +77,11 @@ export default async function Home() {
             <Image
               className={styles.logo}
               src="/vercel.svg"
-              alt="Vercel logomark"
+              alt={getMessage(messages, 'ALT_VERCEL_LOGOMARK', uiLang)}
               width={20}
               height={20}
             />
-            Deploy now
+            {getMessage(messages, 'CTA_DEPLOY_NOW', uiLang)}
           </a>
           <a
             href="https://turborepo.dev/docs?utm_source"
@@ -81,12 +89,12 @@ export default async function Home() {
             rel="noopener noreferrer"
             className={styles.secondary}
           >
-            Read our docs
+            {getMessage(messages, 'CTA_READ_DOCS', uiLang)}
           </a>
         </div>
 
         <Button appName="web" className={styles.secondary}>
-          Open alert
+          {getMessage(messages, 'BUTTON_OPEN_ALERT', uiLang)}
         </Button>
 
         {links.length > 0 ? (
@@ -106,8 +114,7 @@ export default async function Home() {
           </div>
         ) : (
           <div style={{ color: '#666' }}>
-            No links available. Make sure the NestJS API is running on port
-            3000.
+            {getMessage(messages, 'LINKS_EMPTY', uiLang)}
           </div>
         )}
       </main>
@@ -121,11 +128,11 @@ export default async function Home() {
           <Image
             aria-hidden
             src="/window.svg"
-            alt="Window icon"
+            alt={getMessage(messages, 'ALT_WINDOW_ICON', uiLang)}
             width={16}
             height={16}
           />
-          Examples
+          {getMessage(messages, 'CTA_EXAMPLES', uiLang)}
         </a>
         <a
           href="https://turborepo.dev?utm_source=create-turbo"
@@ -135,13 +142,58 @@ export default async function Home() {
           <Image
             aria-hidden
             src="/globe.svg"
-            alt="Globe icon"
+            alt={getMessage(messages, 'ALT_GLOBE_ICON', uiLang)}
             width={16}
             height={16}
           />
-          Go to turborepo.dev →
+          {getMessage(messages, 'CTA_TURBOREPO', uiLang)}
         </a>
       </footer>
     </div>
   );
+}
+
+export async function generateMetadata() {
+  const { messages, uiLang } = await getUiLanguage();
+  const title = getMessage(messages, 'META_HOME_TITLE', uiLang, 'Training App');
+  const description = getMessage(
+    messages,
+    'META_HOME_DESCRIPTION',
+    uiLang,
+    'Training application demo.'
+  );
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title: getMessage(
+        messages,
+        'META_HOME_OG_TITLE',
+        uiLang,
+        title
+      ),
+      description: getMessage(
+        messages,
+        'META_HOME_OG_DESCRIPTION',
+        uiLang,
+        description
+      ),
+    },
+    twitter: {
+      card: 'summary',
+      title: getMessage(
+        messages,
+        'META_HOME_TWITTER_TITLE',
+        uiLang,
+        title
+      ),
+      description: getMessage(
+        messages,
+        'META_HOME_TWITTER_DESCRIPTION',
+        uiLang,
+        description
+      ),
+    },
+  };
 }

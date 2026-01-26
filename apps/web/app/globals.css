@@ -36,6 +36,63 @@ a {
   display: none;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.language-switcher {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
+.language-switcher__label select {
+  appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  color: inherit;
+  padding: 6px 28px 6px 12px;
+  font: inherit;
+}
+
+.language-switcher__label::after {
+  content: '▾';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  pointer-events: none;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.language-switcher__label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  .language-switcher__label select {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(10, 10, 10, 0.7);
+  }
+
+  .language-switcher__label::after {
+    color: rgba(255, 255, 255, 0.7);
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
