@@ -12,7 +12,7 @@ const getGitSha = () =>
 
 export async function GET() {
   try {
-    return NextResponse.json(
+    const response = NextResponse.json(
       {
         ok: true,
         ts: new Date().toISOString(),
@@ -24,6 +24,8 @@ export async function GET() {
       },
       { status: 200 }
     );
+    response.headers.set('Cache-Control', 'no-store');
+    return response;
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
 

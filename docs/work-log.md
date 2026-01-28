@@ -91,3 +91,26 @@
 
 ### 내일 할 것
 - Day 3 실습 페이지 작성.
+
+## 2026-01-28
+
+### 왜 요청했고 무엇을 목표로 했나
+- DB 없이도 서버 런타임 상태를 확인할 수 있는 health endpoint와 진단 페이지를 만들어 왕복 요청 흐름을 완성하려는 목적.
+- 브라우저 → Next.js API → 서버 상태 JSON → 브라우저 표시 + latency 측정 흐름을 확인하려는 목표.
+
+### 핵심 변경 사항 (내용별)
+- Health API 추가
+  - `apps/web/app/api/health/route.ts`에 상태 정보를 반환하는 엔드포인트 구현.
+  - `ts`, `uptimeMs`, `nodeEnv`, `hostname`, `appVersion`, `gitSha` 반환.
+- 진단 페이지 추가
+  - `/health` 페이지에서 API 호출 결과와 latency 표시.
+  - 실패 시 에러 표시 및 Retry 버튼 제공.
+  - 초기 렌더 부담을 줄이기 위해 클라이언트 컴포넌트 분리.
+- 문서 업데이트
+  - `README.md`에 Health Endpoint 사용법 추가.
+
+### 막힌 것/해결
+- dev 서버 기동이 sandbox 제한으로 막혀 확인 실패 → 승인 후 서버 기동 및 `/api/health` 응답 확인.
+
+### 내일 할 것
+- DB 연결 후보 검토: Postgres + Prisma 또는 Drizzle
