@@ -61,6 +61,32 @@ pnpm run build
 pnpm run dev
 ```
 
+## Health Endpoint
+
+**GET** `/api/health`
+
+Example response:
+
+```json
+{
+  "ok": true,
+  "ts": "2026-01-28T12:34:56.789Z",
+  "uptimeMs": 123456,
+  "nodeEnv": "development",
+  "hostname": "my-machine",
+  "appVersion": "0.0.1",
+  "gitSha": null
+}
+```
+
+Local check:
+
+```bash
+pnpm run dev
+# then in another terminal
+curl http://localhost:3000/api/health
+```
+
 #### test
 
 ```bash
