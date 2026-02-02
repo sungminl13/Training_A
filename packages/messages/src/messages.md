@@ -8,6 +8,36 @@
 | LANGUAGE_EN | ko | 영어 |
 | LANGUAGE_KO | en | Korean |
 | LANGUAGE_KO | ko | 한국어 |
+| HEALTH_TITLE | en | Health Diagnostics |
+| HEALTH_TITLE | ko | 헬스 진단 |
+| HEALTH_DESCRIPTION | en | Check API status and measure round-trip latency. |
+| HEALTH_DESCRIPTION | ko | API 상태를 확인하고 왕복 latency를 측정합니다. |
+| HEALTH_STATUS | en | Status |
+| HEALTH_STATUS | ko | 상태 |
+| HEALTH_OK | en | OK |
+| HEALTH_OK | ko | 정상 |
+| HEALTH_FAIL | en | FAIL |
+| HEALTH_FAIL | ko | 실패 |
+| HEALTH_CHECKING | en | CHECKING... |
+| HEALTH_CHECKING | ko | 확인 중... |
+| HEALTH_LATENCY | en | Latency |
+| HEALTH_LATENCY | ko | 지연 시간 |
+| HEALTH_TIMESTAMP | en | Timestamp |
+| HEALTH_TIMESTAMP | ko | 타임스탬프 |
+| HEALTH_UPTIME | en | Uptime |
+| HEALTH_UPTIME | ko | 업타임 |
+| HEALTH_NODE_ENV | en | Node Env |
+| HEALTH_NODE_ENV | ko | 노드 환경 |
+| HEALTH_HOSTNAME | en | Hostname |
+| HEALTH_HOSTNAME | ko | 호스트명 |
+| HEALTH_APP_VERSION | en | App Version |
+| HEALTH_APP_VERSION | ko | 앱 버전 |
+| HEALTH_GIT_SHA | en | Git SHA |
+| HEALTH_GIT_SHA | ko | Git SHA |
+| HEALTH_ERROR | en | Error |
+| HEALTH_ERROR | ko | 오류 |
+| HEALTH_RETRY | en | Retry |
+| HEALTH_RETRY | ko | 다시 시도 |
 | PAGE_GET_STARTED | en | Get started by editing |
 | PAGE_GET_STARTED | ko | 다음 파일을 수정해서 시작하세요 |
 | PAGE_SAVE_CHANGES | en | Save and see your changes instantly. |

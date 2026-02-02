@@ -114,3 +114,29 @@
 
 ### 내일 할 것
 - DB 연결 후보 검토: Postgres + Prisma 또는 Drizzle
+
+## 2026-01-29
+
+### 왜 요청했고 무엇을 목표로 했나
+- 프로젝트 재기동 및 헬스체크/다국어 전환 문제 원인 확인.
+
+### 핵심 변경 사항 (내용별)
+- 의존성/환경 정비
+  - `.npmrc` 레지스트리를 `https://registry.npmjs.org`로 변경.
+  - `pnpm install` 재실행.
+- 타입/ESM 이슈 대응
+  - `apps/api/package.json`에 `@types/express-serve-static-core` 추가.
+  - `packages/messages/src/index.ts`에서 ESM 환경 `__dirname` 대체 처리.
+
+### 막힌 것/해결
+- `next`/`nest` 명령 누락 → 의존성 설치로 해소.
+- 포트 충돌(3001) → 프로세스 종료 후 재기동.
+- `/health` 미표시: API가 IPv6로만 리슨 중이라 `127.0.0.1:3000` 연결 실패 가능성 확인.
+
+### 커밋/배포 관련
+- 커밋: 없음
+- 푸시: 없음
+
+### 내일 할 것
+- 헬스체크 실패 원인 재확인(IPv6/BASE URL/환경변수).
+- 웹 다국어 전환 실패 로그 수집 및 원인 분석.

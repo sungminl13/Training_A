@@ -11,7 +11,7 @@ async function bootstrap() {
   app.use(requestIdMiddleware);
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new ResponseEnvelopeInterceptor());
-  await app.listen(3000);
+  await app.listen(3000, '0.0.0.0');
 }
 
 void bootstrap();

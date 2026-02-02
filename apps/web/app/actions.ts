@@ -1,7 +1,6 @@
 'use server';
 
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+import { cookies, headers } from 'next/headers';
 
 export async function setLanguage(formData: FormData) {
   const lang = formData.get('lang');
@@ -13,5 +12,15 @@ export async function setLanguage(formData: FormData) {
     });
   }
 
-  redirect('/');
+  const headerStore = await headers();
+  const referer = headerStore.get('referer');
+  let path = '/';
+  if (referer) {
+    try {
+      path = new URL(referer).pathname || '/';
+    } catch {
+      path = '/';
+    }
+  }
+  return path;
 }

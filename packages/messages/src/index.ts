@@ -3,7 +3,6 @@ import { resolve } from 'node:path';
 
 export type ErrorMessages = Record<string, Record<string, string>>;
 
-const baseDir = __dirname;
 const repoRoots = [
   process.cwd(),
   resolve(process.cwd(), '..'),
@@ -13,7 +12,6 @@ const repoRoots = [
 async function resolveMessagePath(filename: string) {
   const candidates = [
     ...repoRoots.map((root) => resolve(root, 'packages', 'messages', 'src', filename)),
-    resolve(baseDir, filename),
   ];
 
   for (const candidate of candidates) {
@@ -25,7 +23,8 @@ async function resolveMessagePath(filename: string) {
     }
   }
 
-  return resolve(baseDir, filename);
+  const fallbackRoot = repoRoots[0] ?? process.cwd();
+  return resolve(fallbackRoot, 'packages', 'messages', 'src', filename);
 }
 
 let cachedMessages: ErrorMessages | null = null;

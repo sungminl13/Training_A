@@ -15,7 +15,28 @@ type HealthPayload = {
 
 const REQUEST_TIMEOUT_MS = 3000;
 
-export default function HealthClient() {
+type HealthEnvelope = {
+  data?: HealthPayload;
+  requestId?: string;
+};
+
+type HealthLabels = {
+  status: string;
+  ok: string;
+  fail: string;
+  checking: string;
+  latency: string;
+  timestamp: string;
+  uptime: string;
+  nodeEnv: string;
+  hostname: string;
+  appVersion: string;
+  gitSha: string;
+  error: string;
+  retry: string;
+};
+
+export default function HealthClient({ labels }: { labels: HealthLabels }) {
   const [payload, setPayload] = useState<HealthPayload | null>(null);
   const [latencyMs, setLatencyMs] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -30,18 +51,28 @@ export default function HealthClient() {
     const timeoutId = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
     try {
-      const response = await fetch('/api/health', {
+      const defaultBaseUrl = `http://${window.location.hostname}:3000`;
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? defaultBaseUrl;
+      const endpoint = `${baseUrl.replace(/\/$/, '')}/health`;
+      const response = await fetch(endpoint, {
         cache: 'no-store',
         signal: controller.signal,
       });
       const elapsed = Math.round(performance.now() - start);
-      const data = (await response.json()) as HealthPayload;
+      const body = (await response.json()) as HealthEnvelope | HealthPayload | { message?: string };
+      const data = 'data' in (body as HealthEnvelope)
+        ? (body as HealthEnvelope).data
+        : (body as HealthPayload);
 
       if (!response.ok) {
-        throw new Error(data?.error ?? `Request failed (${response.status})`);
+        const message =
+          (body as { message?: string })?.message ??
+          (data as HealthPayload | undefined)?.error ??
+          `Request failed (${response.status})`;
+        throw new Error(message);
       }
 
-      setPayload(data);
+      setPayload(data ?? null);
       setLatencyMs(elapsed);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error';
@@ -58,7 +89,7 @@ export default function HealthClient() {
     void fetchHealth();
   }, [fetchHealth]);
 
-  const statusLabel = payload?.ok ? 'OK' : 'FAIL';
+  const statusLabel = payload?.ok ? labels.ok : labels.fail;
   const statusColor = payload?.ok ? '#0f766e' : '#b42318';
 
   return (
@@ -71,25 +102,39 @@ export default function HealthClient() {
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <strong style={{ fontSize: 18 }}>Status</strong>
+        <strong style={{ fontSize: 18 }}>{labels.status}</strong>
         <span style={{ color: statusColor, fontWeight: 600 }}>
-          {isLoading ? 'CHECKING...' : statusLabel}
+          {isLoading ? labels.checking : statusLabel}
         </span>
       </div>
 
       <div style={{ marginTop: 12, color: '#333' }}>
-        <div>Latency: {latencyMs ?? '-'} ms</div>
-        <div>Timestamp: {payload?.ts ?? '-'}</div>
-        <div>Uptime: {payload?.uptimeMs ?? '-'} ms</div>
-        <div>Node Env: {payload?.nodeEnv ?? '-'}</div>
-        <div>Hostname: {payload?.hostname ?? '-'}</div>
-        <div>App Version: {payload?.appVersion ?? '-'}</div>
-        <div>Git SHA: {payload?.gitSha ?? '-'}</div>
+        <div>
+          {labels.latency}: {latencyMs ?? '-'} ms
+        </div>
+        <div>
+          {labels.timestamp}: {payload?.ts ?? '-'}
+        </div>
+        <div>
+          {labels.uptime}: {payload?.uptimeMs ?? '-'} ms
+        </div>
+        <div>
+          {labels.nodeEnv}: {payload?.nodeEnv ?? '-'}
+        </div>
+        <div>
+          {labels.hostname}: {payload?.hostname ?? '-'}
+        </div>
+        <div>
+          {labels.appVersion}: {payload?.appVersion ?? '-'}
+        </div>
+        <div>
+          {labels.gitSha}: {payload?.gitSha ?? '-'}
+        </div>
       </div>
 
       {error ? (
         <div style={{ marginTop: 12, color: '#b42318' }}>
-          Error: {error}
+          {labels.error}: {error}
         </div>
       ) : null}
 
@@ -106,7 +151,7 @@ export default function HealthClient() {
           cursor: isLoading ? 'not-allowed' : 'pointer',
         }}
       >
-        Retry
+        {labels.retry}
       </button>
     </section>
   );

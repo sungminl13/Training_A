@@ -1,7 +1,6 @@
 import localFont from 'next/font/local';
 import { getMessage } from '@repo/messages';
 
-import { setLanguage } from './actions';
 import { LanguageSelect } from './components/language-select';
 import { getUiLanguage } from './i18n';
 import './globals.css';
@@ -71,7 +70,6 @@ export default async function RootLayout({
     <html lang={uiLang}>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <LanguageSelect
-          action={setLanguage}
           currentLang={uiLang}
           options={languageOptions}
           label={languageLabel}
